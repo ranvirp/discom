@@ -12,21 +12,46 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="work-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Create Work', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
     <?php 
 	$gridColumns = [
             ['class' => '\kartik\grid\SerialColumn'],
+		['attribute'=>'id','header'=>'id','value'=>
+			function ($model,$key,$index)
+	{
+		return "<a href='http://gpsphu#w".$model->id."'>".$model->id.'</a>';
+	},
+		'format'=>'html'
+		],
 
-            
+            [
+    'class'=>'kartik\grid\ExpandRowColumn',
+    'width'=>'50px',
+    'value'=>function ($model, $key, $index, $column) {
+        return GridView::ROW_COLLAPSED;
+    },
+    'detail'=>function ($model, $key, $index, $column) {
+		$model1=new \app\models\WorkProgress;
+		$model1->work_id=$model->id;
+        return Html::a('Add Progress',['/workprogress/create']);
+		//Yii::$app->controller->renderPartial('/workprogress/_form_1', ['model'=>$model1]);
+    },
+    'headerOptions'=>['class'=>'kartik-sheet-style'] 
+    //'disabled'=>true,
+    //'detailUrl'=>Url::to(['/site/test-expand'])
+],
+		
+		['header'=>'Division',
+			'attribute'=>'division_id',
+		 'value'=>function($model,$key,$index,$column){return $model->division?$model->division->name_en:'';},
+         'filter'=>\yii\helpers\ArrayHelper::map(\app\models\Division::find()->asArray()->all(),'id','name_en')
+			 ],
+			 
             'name_'.Yii::$app->language.':ntext',
-		 ['header'=>'Work Type','value'=>function($model,$key,$index,$column){
+		 ['header'=>'Work Type','attribute'=>'work_type_id','value'=>function($model,$key,$index,$column){
 		$name='name_'.Yii::$app->language;
-		return $model->workType?$model->workType->$name:'';}],
+		return $model->workType?$model->workType->$name:'';},
+		'filter'=>\yii\helpers\ArrayHelper::map(\app\models\WorkType::find()->asArray()->all(),'id','name_en'),
+		],
 			'address',
             ['header'=>'Agency','value'=>function($model,$key,$index,$column)
 	{ $name='name_'.Yii::$app->language;return $model->agency0?$model->agency0->$name:'';},],
@@ -36,8 +61,19 @@ $this->params['breadcrumbs'][] = $this->title;
 		return $model->dept?$model->dept->$name:'';}],
 			'totvalue',
 			'dateofsanction',
-            'dateoffundsreceipt',
-             'dateofstart',
+			['header'=>'Fin %',
+				'attribute'=>'fin',
+			 
+			],
+				['header'=>'Phy %',
+					'attribute'=>'phy',
+			  
+			],
+			'remarks',
+			
+           // 'dateoffundsreceipt',
+             //'dateofstart',
+			/*
 			['header'=>'Tender Details',
 		      'value'=>
 function($model,$key,$index,$column){
@@ -52,7 +88,7 @@ function($model,$key,$index,$column){
 		}
 		$x.='</table>';
 		return $x;},'format'=>'html'],				
-             
+             */
             // 'dept_id',
             
             
@@ -63,12 +99,26 @@ function($model,$key,$index,$column){
             ['class' => '\kartik\grid\ActionColumn'],
         
     ]; 
-	$model1=new \app\models\Work;		?>
+	$model1=new \app\models\WorkSearch;		
+	$filters='';//to be identified later
+	?>
 	<?php     echo GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel' => $model1,
+		'afterRow'=>function($model,$key,$index,$grid)
+	     {
+		$dop=$model->dateofprogress?date('d/m/Y',strtotime($model->dateofprogress)):'Not Entered';
+		 return '<tr><td colspan="12" style="text-align:center">Date of Progress:'.$dop.'</td></tr>';
+		/*
+		    $wp=\app\models\WorkProgress::find()->where('work_id='.$model->id)->orderBy('dateofprogress desc')->one();
+			  $physical=$wp?$wp->physical.'%':'Not enetered';
+			  $dop=$wp?date('d/m/Y',strtotime($wp->dateofprogress)):'Not enetered';
+			  return '<tr><td colspan="12" style="text-align:center">'.$model->status.' Date of Progress:'.$dop.'</td></tr>';
+		 * */
+		 
+		 },
     'columns' => $gridColumns,
-		'gridOptions'=>['class'=>'small'],
+		'tableOptions'=>['class'=>'small'],
     'containerOptions' => ['style'=>'overflow: auto','class'=>'small'], // only set when $responsive = false
     'headerRowOptions'=>['class'=>'kartik-sheet-style'],
     'filterRowOptions'=>['class'=>'kartik-sheet-style'],
@@ -106,10 +156,12 @@ function($model,$key,$index,$column){
     'hover' => true,
     'showPageSummary' => true,
     'panel' => [
-    'type' => GridView::TYPE_ACTIVE,
-    'heading' => "List of Works",
-		'resizableColumns'=>false,
-    ],
+			'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-globe"></i> List of Works' . '</h3>',
+			'type' => 'success',
+			'before' => Html::a('<i class="glyphicon glyphicon-plus"></i> Create Work', ['/work/create'], ['class' => 'btn btn-success']).'<h3>'.$filters.'</h3>',
+			'after' => Html::a('<i class="glyphicon glyphicon-repeat"></i> Reset Grid', ['/work'], ['class' => 'btn btn-info']),
+			'footer' => false
+		],
     //'exportConfig' => $exportConfig,
     ]);?>
 	

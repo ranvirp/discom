@@ -18,6 +18,7 @@ use Yii;
  */
 class MaterialRequirement extends \yii\db\ActiveRecord
 {
+	public $cnt,$totqty;
     /**
      * @inheritdoc
      */
@@ -66,4 +67,8 @@ class MaterialRequirement extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Work::className(), ['id' => 'work_id']);
     }
+	public static function getMaterialSummary($query)
+	{
+		return $query->select('count(*) as cnt,sum(qty) as totqty')->groupBy('material_type_id');
+	}
 }

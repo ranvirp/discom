@@ -64,7 +64,7 @@ class DesignationController extends Controller
         
 		$model = new Designation();
 		$model->load(Yii::$app->request->post());
-		$x=\app\masterdata\models\Designation::find()->where(['level_id'=>$model->level_id,
+		$x=\app\modules\masterdata\models\Designation::find()->where(['level_id'=>$model->level_id,
 			'designation_type_id'=>$model->designation_type_id])->one();
 		if ($x) $model->id=$x->id;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

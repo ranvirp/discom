@@ -58,7 +58,7 @@ class MaterialRequirementController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate1()
     {
         $model = new MaterialRequirement();
 
@@ -118,4 +118,24 @@ class MaterialRequirementController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+	public function actionCreate($wid)
+	{
+		$model = new MaterialRequirement();
+        $model->work_id=$wid;
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+        {
+            $model = new MaterialRequirement();
+			$model->work_id=$wid;//reset model
+        }
+ 
+       
+        $dataProvider = new ActiveDataProvider(['query'=>MaterialRequirement::find()->where('work_id='.$wid)->orderBy('id desc')]);
+ 
+        return $this->render('index_simple', [
+            //'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+        ]);
+
+	}
 }

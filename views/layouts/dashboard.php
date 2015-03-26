@@ -27,36 +27,50 @@
 	<div class='col-lg-12'>
 	<?php
 use yii\helpers\Url;
-$items=['Designation'=>'designation','Designation Type'=>'designationtype',
-	    'Level'=>'level'];
+$items=['Designation'=>['url'=>'/masterdata/designation','faicon'=>'user','class'=>'\app\modules\masterdata\models\Designation'],
+	    'Designation Type'=>['url'=>'/masterdata/designationtype','faicon'=>'user','class'=>'\app\modules\masterdata\models\DesignationType'],
+	    'Level'=>['url'=>'/masterdata/level','faicon'=>'tasks','class'=>'\app\modules\masterdata\models\Level'],
+	
+	    ];
 foreach ($items as $label=>$item)
 {
 	
-echo '<div class="col-md-3 col-sm-6 icon-box">
-	<div class="row icon-box-top"><span>'.$label.'</span></div>
-	 
-	<div class="row links">
-	<a href="'.Url::to(['/masterdata/'.$item.'/index']).'"><i class="fa fa-search"></i></a>
-    <a href="'.Url::to(['/masterdata/'.$item.'/create']).'"><i class="fa fa-edit"></i></a>
-    </div>
-</div>'."\n";
+echo '<div class="col-md-3 col-sm-6">
+	<div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-'.$item['faicon'].' fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">'.$item['class']::find()->count().'</div>
+                                    <div>New '.$label.'!</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                            <div class="panel-footer">
+							   <a href="'.Url::to([$item['url'].'/index']).'">
+								   <p>
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+								</p>
+								 </a>
+								 <a href="'.Url::to([$item['url'].'/create']).'">
+								
+								<p>
+                                <span class="pull-left">Create New</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+								</p>
+								</a>
+                            </div>
+                       
+                    </div></div>'."\n";
 
 }
-$items=['Circle'=>'circle','Division'=>'division',
-	    'Work Type'=>'worktype','Material Type'=>'materialtype'];
-foreach ($items as $label=>$item)
-{
-	
-echo '<div class="col-md-3 col-sm-6 icon-box">
-	<div class="row icon-box-top"><span>'.$label.'</span></div>
-	 
-	<div class="row links">
-	<a href="'.Url::to(['/'.$item.'/index']).'"><i class="fa fa-search"></i></a>
-    <a href="'.Url::to(['/'.$item.'/create']).'"><i class="fa fa-edit"></i></a>
-    </div>
-</div>'."\n";
 
-}
 ?>
 </div>
 </div>

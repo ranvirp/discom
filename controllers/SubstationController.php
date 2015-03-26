@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Substation;
-use yii\data\ActiveDataProvider;
+use app\models\SubstationSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -32,11 +32,11 @@ class SubstationController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Substation::find(),
-        ]);
+        $searchModel = new SubstationSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -118,21 +118,4 @@ class SubstationController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-	/*
-	 * Returns list of substations in a division in json form
-	 */
-	public function actionGet()
-	{
-		$lang=Yii::$app->language;
-		$division=Yii::$app->request->post('depdrop_parents')[0];
-		$y=[];
-		foreach (\yii\helpers\ArrayHelper::map(\app\models\Substation::find()->where('division_id=:division_id',[':division_id'=>$division])->asArray()->all(),'id','name_'.$lang) as $id=>$name)
-		{
-			$x['id']=$id;
-			$x['name']=$name;
-			$y[]=$x;
-		}
-		echo \yii\helpers\Json::encode(['output'=>$y,'selected'=>'']);
-		return;
-	}
 }

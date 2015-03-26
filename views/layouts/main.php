@@ -58,12 +58,12 @@
 		}
 		#main-body
 		{
-			width:940px;
+			width:100%;
 			position: absolute;
             top:0;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
 
              margin: auto;
 	
@@ -106,16 +106,37 @@
 		use yii\bootstrap\Nav;
 		use yii\bootstrap\NavBar;
 use yii\widgets\Menu;
-
+NavBar::begin(['renderInnerContainer'=>false,'options'=>['style'=>'background-color:#000023;']]);
+?>
+		<div class="pull-right">
+			<a href="<?=\yii\helpers\Url::to(['/site/apk'])?>">Latest APK </a>
+		</div>
+<?php
+NavBar::end();
 NavBar::begin(['renderInnerContainer'=>false,'options'=>['class'=>'container']]);
 echo Nav::widget([
     'items' => [
         ['label' => 'Master Data', 'url' => ['/site/index'],'linkOptions'=>[],'options'=>['class'=>'dropdown']
-			,'items'=>['label'=> $this->render('dashboard.php')]],
-        ['label' => 'About', 'url' => ['/site/about'],'options'=>['class'=>'dropdown']
+			,'items'=>['label'=>Yii::$app->user->isGuest?'': $this->render('/site/dashboard_operator')]],
+        ['label' => 'Data Entry', 'url' => ['#'],'options'=>['class'=>'dropdown']
 			,'items'=>[ 
-	['label' => 'About', 'url' => ['/site/about'],'options'=>['class'=>'dropdown']]],
+	            ['label' => 'Work', 'url' => ['/work/create'],'options'=>['class'=>'dropdown']],
+				['label' => 'Work Progress', 'url' => ['/work/index'],'options'=>['class'=>'dropdown']],
+	            ['label' => 'Add Comments', 'url' => ['/work/create'],'options'=>['class'=>'dropdown']]
+			],
     ],
+		        ['label' => 'Reports', 'url' => ['#'],'options'=>['class'=>'dropdown']
+			,'items'=>[ 
+	            ['label' => 'List of Works Scheme wise', 'url' => ['/report?rt=r2'],'options'=>['class'=>'dropdown']],
+				['label' => 'List of Schemes', 'url' => ['/report?rt=r1'],'options'=>['class'=>'dropdown']],
+	            ['label' => 'Divisions', 'url' => ['/division/index'],'options'=>['class'=>'dropdown']],
+				['label' => 'Material Requirements Scheme Wise', 'url' => ['/report?rt=r3'],'options'=>['class'=>'dropdown']],
+                ['label' => 'Material Requirements Work Wise', 'url' => ['/report?rt=r4'],'options'=>['class'=>'dropdown']],        
+	            ['label' => 'Exception Reports', 'url' => ['/work/index'],'options'=>['class'=>'dropdown']],
+
+			],
+    ],
+		
 		Yii::$app->user->isGuest ?
         ['label' => 'Login', 'url' => ['/user/login']] :
         ['label' => 'Logout (' . Yii::$app->user->displayName . ')',
@@ -128,7 +149,7 @@ NavBar::end();
 		</div>
 	
 	</div>
-		<div class="content">
+		<div class="content container-fluid">
 			<div class="row">
 				<div class="col-lg-12">
 					<?php echo $content; ?>

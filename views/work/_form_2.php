@@ -30,9 +30,9 @@ $this->registerJs(
 
 <div class="work-form">
 <?php yii\widgets\Pjax::begin(['id' => 'new_work']) ?>
-    <?php $form = ActiveForm::begin(['options' => ['data-pjax' => '1' ]]); ?>
+    <?php $form = ActiveForm::begin(['options' => ['data-pjax' => true ]]); ?>
 	<div class="row">
-		<div class="col-lg-2 small">
+		<div class="col-lg-4 small">
 			<?=$form->field($model,'division_id')->widget(\app\widgets\DivisionWidget::classname())?>
 		</div>
 		
@@ -55,7 +55,8 @@ $this->registerJs(
 	<div class="col-lg-1">
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success test' : 'btn btn-primary test',
-			'onClick'=>'$(".work-form").parent().append($(".work-form").clone());return false;']) ?>
+			//'onClick'=>'$(".work-form").parent().append($(".work-form").clone());return false;'
+			]) ?>
     </div>
 	</div>
    

@@ -1,21 +1,20 @@
 <?php
 
-use yii\helpers\Html;
+use kartik\helpers\Html;
 
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Substation */
 
-$this->title = 'Create Substation';
-$this->params['breadcrumbs'][] = ['label' => 'Substations', 'url' => ['index']];
+$this->title = Yii::t('app', 'Create {modelClass}', [
+    'modelClass' => 'Substation',
+]);
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Substations'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="substation-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
+<?=   Html::Panel(['heading'=>Html::encode($this->title),'body'=>$this->render('_form', [
         'model' => $model,
-    ]) ?>
-
+    ]) ],Html::TYPE_WARNING)
+	   ?>
 </div>

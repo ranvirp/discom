@@ -49,7 +49,13 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+		if (Yii::$app->user->isGuest)
+			$this->redirect(['/user/login']);
+		if (Yii::$app->user->can('operator'))
+			
+        return $this->render('dashboard_operator');
+		else 
+			return $this->render('dashboard_others');
     }
 
     public function actionLogin()
@@ -93,4 +99,25 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+	public function actionApk()
+	{
+		$fullPath='/Volumes/d/workspace/GPSPhotoUploader/bin/GPSPhotoUploader.apk';
+		//echo $fullPath;
+		
+     if (file_exists($fullPath)) {
+        //$mime=\yii\helpers\FileHelper::getMimeType($fullPath);
+		$mime='application/vnd.android.package-archive';
+		$size=filesize($fullPath);
+         //header("Pragma: no-cache");
+        // header("Expires: 0");
+         header('Content-Description: File Transfer');
+        // header('Content-Type: ' . CFileHelper::getMimeType($model->fileWithPath()));
+         header('Content-Type: ' .$mime );
+         header('Content-Disposition: attachment; filename="'.$fullPath.'"');
+		 header('Content-Transfer-Encoding:binary');
+		 header('Content-Length:'.$size);
+		 readFile($fullPath);
+		 exit;
+	}
+	}
 }

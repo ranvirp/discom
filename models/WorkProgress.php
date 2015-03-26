@@ -60,4 +60,32 @@ class WorkProgress extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Work::className(), ['id' => 'work_id']);
     }
+	public function getLatest()
+	{
+		$query='select *,max(dateofprogress) as latest from work_progress group by dateofprogress';
+		$wps= $this->db->createCommand()->queryAll($sql);
+		return $wps;
+		
+	}
+	public function afterSave()
+	{
+		parent::afterSave(true,[]);
+		$work=\app\models\Work::findOne($this->work_id);
+		
+		if ((!$work->dateofprogress) || (strtotime($work->dateofprogress)<strtotime($this->dateofprogress)))
+		{
+			//print_r($work);
+		//exit;
+		$work->fin=$this->financial;
+		$work->phy=$this->physical;
+		$work->dateofprogress=$this->dateofprogress;
+		$work->remarks=$this->remarks;
+		
+		if ($work->save())
+			print "Saved";
+		else 
+			print_r($work->errors);
+		//exit;
+		}
+	}
 }

@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -21,13 +21,32 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
+[
+    'class'=>'kartik\grid\ExpandRowColumn',
+    'width'=>'50px',
+    'value'=>function ($model, $key, $index, $column) {
+        return GridView::ROW_COLLAPSED;
+    },
+    'detail'=>function ($model, $key, $index, $column) {
+        return Yii::$app->controller->renderPartial('_form_1', ['model'=>$model]);
+    },
+    'headerOptions'=>['class'=>'kartik-sheet-style'] 
+    //'disabled'=>true,
+    //'detailUrl'=>Url::to(['/site/test-expand'])
+],
             'id',
+		[ 'header'=>'Date of Report',
+			'value'=>function($model,$key,$index,$column)
+	             {  
+		            $date = new DateTime($model->dateofprogress);
+		            return $date->format('Y-m-d');
+	             },
+			],
             'work_id',
             'physical',
             'financial',
-            'dateofprogress',
-            // 'remarks:ntext',
+            
+            'remarks:ntext',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

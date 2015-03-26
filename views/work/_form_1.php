@@ -23,6 +23,10 @@ use yii\bootstrap\Tabs;
   </ul>
   <div class='tab-content'>
 	  <div class='tab-pane active' role='tabpanel' id='basicinfo'>
+		  <div class="row">
+			  <?=$form->field($model,'scheme_id')->dropDownList(
+                 \yii\helpers\ArrayHelper::map(\app\models\Scheme::find()->asArray()->all(),'id','name_en'))?>
+		  </div>
 	<div class="row">
 		<div class="col-lg-4">
     <?= $form->field($model, 'name_hi')->textInput(['size' => 50,'class'=>'col-lg-12 hindiinput']) ?>
@@ -61,14 +65,16 @@ use yii\bootstrap\Tabs;
 	</div>
 	<div class="row">
 		<div class="col-lg-6">
-			 <?= $form->field($model, 'fromloc')->textInput(['size' => 50]) ?>
+			 <?= $form->field($model, 'gpslat')->textInput(['size' => 50]) ?>
 	
 		</div>
 		<div class="col-lg-6">
-			 <?= $form->field($model, 'toloc')->textInput(['size' => 50]) ?>
+			 <?= $form->field($model, 'gpslong')->textInput(['size' => 50]) ?>
 	
 		</div>
 	</div>
+	</div>
+		<div role='tabpanel' class='tab-pane' id='otherdetails'>
 		<div class="row">
 		<div class="col-lg-12">
 			 <?= $form->field($model, 'work_admin')->widget(\app\widgets\DesignationWidget::classname()) ?>
@@ -104,6 +110,7 @@ use yii\bootstrap\Tabs;
 'autoclose'=>true
 ]
 ]); ?>
+	</div>
 	</div>
 	</div>
    <?= $form->field($model, 'status')->dropDownList(\app\models\Work::status()) ?>

@@ -58,6 +58,27 @@ class Work extends \yii\db\ActiveRecord
 		self::WORK_IN_PROGRESS=>\Yii::t('app',"Work In Progress"),
 		self::WORK_COMPLETED=>\Yii::t('app',"Work Completed")];
 	 }
+	 public static $work_type_rules=[3=>['show'=>['address','gpslat','gpslong'],'required'=>['address','gpslat','gpslong']],
+			4=>['show'=>['substation_id'],'required'=>['substation_id']],
+			5=>['show'=>['substation_id'],'required'=>['substation_id']],
+			6=>['show'=>['substation_id'],'required'=>['substation_id']],
+			7=>['show'=>['substation_id','fromloc','toloc'],'required'=>['substation_id']],
+			8=>['show'=>['feeder_id'],'required'=>['feeder_id']],
+			9=>['show'=>['substation_id'],'required'=>['substation_id']],
+			10=>['show'=>['substation_id','feeder_id'],'required'=>['substation_id','feeder_id']],
+			11=>['show'=>['feeder_id'],'required'=>['feeder_id']],
+			12=>['show'=>['feeder_id'],'required'=>['feeder_id']],
+			13=>['show'=>['feeder_id'],'required'=>['feeder_id']],
+			14=>['show'=>['substation_id'],'required'=>['substation_id']],
+			15=>['show'=>['address','gpslat','gpslong'],'required'=>['address','gpslat','gpslong']],
+			16=>['show'=>['address','gpslat','gpslong'],'required'=>['address','gpslat','gpslong']],
+			17=>['show'=>['substation_id','fromloc','toloc'],'required'=>['substation_id','fromloc','toloc']],
+			18=>['show'=>['feeder_id'],'required'=>['feeder_id']],
+			19=>['show'=>['substation_id'],'required'=>['substation_id']],
+			
+			];
+	 //public $fin;//latest financial Progress
+	 //public $phy;//latest Physical Progress
     /**
      * @inheritdoc
      */
@@ -72,11 +93,13 @@ class Work extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name_hi', 'name_en', 'loc', 'fromloc', 'toloc'], 'string'],
+            [['name_hi', 'name_en', 'loc', 'fromloc', 'toloc','remarks'], 'string'],
             [['agency', 'dept_id', 'work_type_id', 'status', 'scheme_id', 'work_admin', 'substation_id', 'division_id'], 'integer'],
-            [['dateofsanction', 'dateoffundsreceipt', 'dateofstart'], 'safe'],
-            [['totvalue', 'gpslat', 'gpslong'], 'number'],
-            [['address'], 'string', 'max' => 250]
+            [['dateofsanction','feeder_id', 'dateoffundsreceipt', 'work_id','dateofstart','dateofprogress'], 'safe'],
+            [['totvalue', 'gpslat', 'gpslong','phy','fin'], 'number'],
+            [['address'], 'string', 'max' => 250],
+			
+			[['name_en','work_type_id','work_id','scheme_id','totvalue','division_id'],'required'],
         ];
     }
 
@@ -87,26 +110,27 @@ class Work extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'name_hi' => Yii::t('app', 'Name Hi'),
-            'name_en' => Yii::t('app', 'Name En'),
-            'agency' => Yii::t('app', 'Agency'),
-            'dateofsanction' => Yii::t('app', 'Dateofsanction'),
-            'dateoffundsreceipt' => Yii::t('app', 'Dateoffundsreceipt'),
-            'dateofstart' => Yii::t('app', 'Dateofstart'),
-            'totvalue' => Yii::t('app', 'Totvalue'),
+            'name_hi' => Yii::t('app', 'Name in Hindi'),
+            'name_en' => Yii::t('app', 'Name'),
+            'agency' => Yii::t('app', 'Executing Agency'),
+            'dateofsanction' => Yii::t('app', 'Date of Sanction'),
+            'dateoffundsreceipt' => Yii::t('app', 'Date of Funds Receipt'),
+            'dateofstart' => Yii::t('app', 'Date of Start'),
+            'totvalue' => Yii::t('app', 'Total Cost'),
             'dept_id' => Yii::t('app', 'Dept ID'),
-            'work_type_id' => Yii::t('app', 'Work Type ID'),
+            'work_type_id' => Yii::t('app', 'Type of Work'),
             'address' => Yii::t('app', 'Address'),
-            'gpslat' => Yii::t('app', 'Gpslat'),
-            'gpslong' => Yii::t('app', 'Gpslong'),
-            'loc' => Yii::t('app', 'Loc'),
+            'gpslat' => Yii::t('app', 'Latitude(decimal format)'),
+            'gpslong' => Yii::t('app', 'Longitude(decimal format)'),
+            'loc' => Yii::t('app', 'Location(GPS point in decimal,decimal format)'),
             'status' => Yii::t('app', 'Status'),
-            'scheme_id' => Yii::t('app', 'Scheme ID'),
+            'scheme_id' => Yii::t('app', 'Name of Scheme'),
             'work_admin' => Yii::t('app', 'Work Admin'),
-            'fromloc' => Yii::t('app', 'Fromloc'),
-            'toloc' => Yii::t('app', 'Toloc'),
-            'substation_id' => Yii::t('app', 'Substation ID'),
-            'division_id' => Yii::t('app', 'Division ID'),
+            'fromloc' => Yii::t('app', 'Starting Location(decimal,decimal format)'),
+            'toloc' => Yii::t('app', 'End Location(decimal,decimal format)'),
+            'substation_id' => Yii::t('app', 'Substation'),
+            'division_id' => Yii::t('app', 'Division'),
+			'feeder_id'=>Yii::t('app','Feeder'),
         ];
     }
 
@@ -116,6 +140,14 @@ class Work extends \yii\db\ActiveRecord
     public function getWorkProgresses()
     {
         return $this->hasMany(WorkProgress::className(), ['work_id' => 'id']);
+    }
+	/**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWorkProgressLatest()
+    {
+        return WorkProgress::find()->where ('work_id ='.$this->id)
+		     ->orderBy('dateofprogress desc')->limit(1);
     }
 
     /**
@@ -205,4 +237,28 @@ class Work extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Division::className(), ['id' => 'division_id']);
     }
+	public function display($form,$attribute)
+	{
+		switch ($attribute)
+		  {
+			case 'feeder_id':
+				//return $form->field($this,$attribute)->dropDownList(\yii\helpers\ArrayHelper::map
+				//(\app\models\Feeder::find()->asArray()->all(),'id','name_en'));
+				return $form->field($this,$attribute)->widget(\app\widgets\FeederWidget::classname());
+				break;
+			case 'address':
+			case 'gpslat':
+			case 'gpslong':
+			case 'fromloc':
+			case 'toloc':
+				return $form->field($this,$attribute)->textInput();
+				break;
+			case 'substation_id':
+				return $form->field($this,$attribute)->dropDownList(\yii\helpers\ArrayHelper::map
+				(\app\models\Substation::find()->where($this->division_id?'division_id='.$this->division_id:'true')->asArray()->all(),'id','name_en'));
+				break;
+				
+			
+		  }
+	}
 }

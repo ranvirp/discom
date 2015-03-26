@@ -77,4 +77,5 @@ class Scheme extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Work::className(), ['scheme_id' => 'id'])->count('totvalue');
     }
+	
 }

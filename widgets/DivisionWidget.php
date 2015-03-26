@@ -25,8 +25,8 @@ class DivisionWidget  extends \yii\base\Widget{
 		// Normal parent select
 		$lang=Yii::$app->language;
 		echo '<div class="row"><div class="col-md-6">';
-echo \yii\helpers\Html::activeDropDownList($this->model, $this->attribute,
-\yii\helpers\ArrayHelper::map(\app\models\Circle::find()->asArray()->all(),'id','name_'.$lang), ['label'=>'Select Circle','prompt'=>'None','id'=>$attribute.'-circle-id']);
+echo \yii\helpers\Html::dropDownList($this->attribute.'-circle-id','',
+\yii\helpers\ArrayHelper::map(\app\models\Circle::find()->asArray()->all(),'id','name_'.$lang), ['label'=>'Select Circle','class'=>'form-control','prompt'=>'None','id'=>$attribute.'-circle-id']);
 
 // Dependent Dropdown
 //echo $form->field($model, $attribute)->widget(
@@ -34,7 +34,7 @@ echo '</div><div class="col-md-6">';
 echo	DepDrop::widget( [
 		'model'=>$model,
 		'attribute'=>$attribute,
-     'options' => ['id'=>$attribute.'-id'],
+     //'options' => ['id'=>$attribute.'-id'],
      'pluginOptions'=>[
          'depends'=>[$attribute.'-circle-id'],
          'placeholder' => 'Select...',

@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
  
  
-<?php Pjax::begin(['id' => 'works']) ?>
+<?php Pjax::begin(['id' => 'works','enableReplaceState'=>true]) ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

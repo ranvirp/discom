@@ -32,10 +32,16 @@ class WorkProgressController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
+        
+        $model = new \app\models\WorkProgress;
+		if ($model->load(Yii::$app->request->post()) && $model->save())
+		{
+		}
+		
+		$dataProvider = new ActiveDataProvider([
             'query' => WorkProgress::find(),
         ]);
-
+		 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
         ]);
@@ -63,7 +69,7 @@ class WorkProgressController extends Controller
         $model = new WorkProgress();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return ;
         } else {
             return $this->render('create', [
                 'model' => $model,
