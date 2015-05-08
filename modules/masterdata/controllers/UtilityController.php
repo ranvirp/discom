@@ -6,6 +6,7 @@ use yii\web\Controller;
 use Yii;
 use \app\modules\masterdata\Utility;
 
+        
 class UtilityController extends Controller
 {
     public function actionIndex1()
@@ -14,17 +15,19 @@ class UtilityController extends Controller
     }
 	public function actionIndex()
 	{
-		if (Yii::$app->request->get('at'))
+		if (Yii::$app->request->get('at')) //at===action type
 		{//at=>action type
 			$at=Yii::$app->request->get('at');
 			switch ($at)
 			{
-				case 'glt':
+				case 'glt': //get level type
 				 $id=Yii::$app->request->get('id');
-					if (!is_integer($id))
+				 	if (!is_numeric(trim($id)))
 						return json_encode([]);
 					else 
-				 return json_encode(Utility::getLevelsByType($id));
+					{
+					return json_encode(Utility::getLevelsByType($id));
+				 }
 			     break;
 			 case 'gltk'://as per requirement of krajee depdropwidget
 				 $lang=Yii::$app->language;

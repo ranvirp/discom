@@ -1,0 +1,48 @@
+<?php
+return [
+    'work_progress1'=>[
+        'id'=> '24',
+        'work_id'=> '21',
+        'physical'=> '20',
+        'financial'=> '30',
+        'dateofprogress'=> '2015-04-28',
+        'remarks'=> 'hello',
+        'expenditure'=> '30',
+        ],
+    'work_progress2'=>[
+        'id'=> '25',
+        'work_id'=> '19',
+        'physical'=> '10',
+        'financial'=> '15',
+        'dateofprogress'=> '2015-04-22',
+        'remarks'=> '12',
+        'expenditure'=> '12',
+        ],
+    'work_progress3'=>[
+        'id'=> '26',
+        'work_id'=> '20',
+        'physical'=> '20',
+        'financial'=> '35',
+        'dateofprogress'=> '2015-04-08',
+        'remarks'=> 'grave danger',
+        'expenditure'=> '30',
+        ],
+    'work_progress4'=>[
+        'id'=> '27',
+        'work_id'=> '20',
+        'physical'=> '20',
+        'financial'=> '30',
+        'dateofprogress'=> '2015-04-14',
+        'remarks'=> 'poor progress',
+        'expenditure'=> '20',
+        ],
+    'work_progress5'=>[
+        'id'=> '28',
+        'work_id'=> '21',
+        'physical'=> '40',
+        'financial'=> '20',
+        'dateofprogress'=> '2015-04-29',
+        'remarks'=> 'poor progress',
+        'expenditure'=> '34',
+        ],
+];

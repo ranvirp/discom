@@ -9,6 +9,23 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="designation-form">
+<?php 
+if ($model->designation_type_id && $model->level_id)
+  {
+   $classname=$model->designationType->level->class_name;
+   $dd=\yii\helpers\ArrayHelper::map($classname::find()->asArray()->all(),'id','name_en');
+  /*
+  $js="
+
+$('#dtid').trigger('click');
+$("#level-id").val("'.$model->level_id.'")
+";
+$this->registerJs($js);
+*/
+    
+  }
+  else $dd=[];
+?>
     <?php 
 	   $lang=Yii::$app->language;
 	   $url = \yii\helpers\Url::to(['/masterdata/utility?at=glt&id=']);
@@ -20,10 +37,10 @@ use yii\widgets\ActiveForm;
     <?php $items = \yii\helpers\ArrayHelper::map(\app\modules\masterdata\models\DesignationType::find()->asArray()->all(),'id','name_'.$lang);?>
     <div class='row'>
 		<div class='col-md-6'>
-	<?= $form->field($model, 'designation_type_id')->dropDownList($items,['prompt'=>'None','onClick'=>'js:populateDropdown("'.$url.'"+$(this).val(),"'.$id.'")']) ?>
+	<?= $form->field($model, 'designation_type_id')->dropDownList($items,['id'=>'dtid','prompt'=>'None','onClick'=>'js:populateDropdown("'.$url.'"+$(this).val(),"'.$id.'")']) ?>
 		</div>
 		<div class='col-md-6'>
-    <?= $form->field($model, 'level_id')->dropDownList(['None'],['id'=>'level-id','prompt'=>'None']) ?>
+    <?= $form->field($model, 'level_id')->dropDownList($dd,['id'=>'level-id','prompt'=>'None']) ?>
 	</div>
 	</div>
 	<div class='row'>
@@ -47,7 +64,9 @@ use yii\widgets\ActiveForm;
 	</div>
 		</div>
 		
-    <?= $form->field($model, 'officer_userid')->dropDownList($users,['maxlength' => 10]) ?>
+    <?php
+   // $form->field($model, 'officer_userid')->dropDownList($users,['maxlength' => 10])
+    ?>
     
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

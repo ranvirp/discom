@@ -50,6 +50,7 @@ class PhotoCreateAction extends \yii\rest\Action
 			$userClass='amnah\yii2\user\models\User';
 			$user=$userClass::findIdentityByAccessToken($access_token);
         $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+       // $model->title=Yii::$app->getRequest()->getBodyParams('title');
 		   $model->created_by=$user->id;
         if ($model->save()) {
             $response = Yii::$app->getResponse();

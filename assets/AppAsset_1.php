@@ -19,10 +19,19 @@ class AppAsset_1 extends AssetBundle
     //public $baseUrl = '@vendor';
     public $css = [
         'bower/font-awesome/css/font-awesome.css',
-		'bower/sbadmin2/metisMenu/dist/metisMenu.css'
+        'solid/css/hoverex-all.css',
+        'solid/css/prettyPhoto.css',
+        'solid/css/style.css',
+		//'bower/sbadmin2/metisMenu/dist/metisMenu.css'
     ];
     public $js = [
-		'bower/sbadmin2/metisMenu/dist/metisMenu.js'
+        'solid/js/jquery.hoverdir.js',
+'solid/js/custom.js',
+'solid/js/jquery.prettyPhoto.js',
+'solid/js/retina-1.1.0.js',
+'solid/js/jquery.hoverex.min.js',
+'solid/js/jquery.isotope.min.js'
+		//'bower/sbadmin2/metisMenu/dist/metisMenu.js'
 		
 		//'https://www.google.com/jsapi',
 		//'js/googletransliterate.js'

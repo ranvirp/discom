@@ -32,29 +32,25 @@ $this->registerJs(
 <?php yii\widgets\Pjax::begin(['id' => 'new_matreq']) ?>
     <?php $form = ActiveForm::begin(['options' => ['data-pjax' => true ]]); ?>
 	<div class="row">
-		
-		
-		
-		
-		<div class="col-lg-2">
+		<div class="col-lg-12">
  <?= $form->field($model, 'material_type')->dropDownList(\yii\helpers\ArrayHelper::map(
 	\app\models\MaterialType::find()->asArray()->all(),'id','name_'.Yii::$app->language)) ?>
 		</div>
 		
-		<div class="col-lg-2">
+		<div class="col-lg-12">
 		 <?= $form->field($model, 'qty')->textInput() ?>
 		</div>
 		
 		
-	
+	<div class="col-lg-12">
    
-	<div class="col-lg-1">
-    <div class="form-group">
+	<div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success test' : 'btn btn-primary test',
 			//'onClick'=>'$(".work-form").parent().append($(".work-form").clone());return false;'
 			]) ?>
     </div>
 	</div>
+	
    
     <?php ActiveForm::end(); ?>
 		<?php yii\widgets\Pjax::end() ?>

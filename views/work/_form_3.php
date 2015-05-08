@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
 use kartik\widgets\DatePicker;
 use kartik\money\MaskMoney;
 
@@ -9,43 +9,38 @@ use kartik\money\MaskMoney;
 /* @var $model app\models\Work */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-
+<h3>Work Entry Form </h3>
 <div class="work-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+    'layout' => 'horizontal',
+    'fieldConfig' => [
+        'template' => "{label}\n{beginWrapper}\n{input}\n{hint}\n{error}\n{endWrapper}",
+        'horizontalCssClasses' => [
+            'label' => 'col-sm-4',
+            'offset' => 'col-sm-offset-4',
+            'wrapper' => 'col-sm-8',
+            'error' => '',
+            'hint' => '',
+        ],
+    ],
+]); ?>
 	
-	<div class="row">
-		<div class="col-lg-5">
+	
  <?= $form->field($model, 'work_type_id')->dropDownList(\yii\helpers\ArrayHelper::map(
 	\app\models\WorkType::find()->asArray()->all(),'id','name_'.Yii::$app->language),
 	 ['prompt'=>'None','onChange'=>'this.form.submit()']) ?>
-		</div>
-		 <div class="col-lg-4">
 			  <?=$form->field($model,'scheme_id')->dropDownList(
                  \yii\helpers\ArrayHelper::map(\app\models\Scheme::find()->asArray()->all(),'id','name_en'),['prompt'=>'None'])?>
 			
-			  </div>
-		<div class="col-lg-3">
 				 <?= $form->field($model,'division_id')->dropDownList(
                  \yii\helpers\ArrayHelper::map(\app\models\Division::find()->asArray()->all(),'id','name_en'),['prompt'=>'None'])?>
-			  </div>
 			 
-	</div>
-	<div class="row">
-		<div class="row">
-			  
-		  <div class="col-lg-3">
-    <?= $form->field($model, 'work_id')->textInput(['size' => 100]) ?>
+	<?= $form->field($model, 'work_id')->textInput(['size' => 100]) ?>
 	
-   	</div>
-			  <div class="col-lg-6">
-    <?= $form->field($model, 'name_en')->textInput(['size' => 50]) ?>
-		</div>
-			  <div class='col-lg-3'>
+   	<?= $form->field($model, 'name_en')->textInput(['size' => 50]) ?>
 			    <?= $form->field($model, 'totvalue')->textInput() ?>
 	
-		   </div>
-	</div>
 		<?php
 		$work=Yii::$app->request->post('Work');
 		if ($work && array_key_exists('work_type_id',$work) && array_key_exists($work['work_type_id'],$x))
@@ -68,5 +63,3 @@ use kartik\money\MaskMoney;
 
     <?php ActiveForm::end(); ?>
 
-</div>
-</div>

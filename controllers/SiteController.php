@@ -49,13 +49,18 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
+     //$this->layout = '//main-landingpage'; 
+		  
 		if (Yii::$app->user->isGuest)
-			$this->redirect(['/user/login']);
+		 {
+		  	$this->redirect(['/user/login']);
+			
+		 }
 		if (Yii::$app->user->can('operator'))
 			
         return $this->render('dashboard_operator');
 		else 
-			return $this->render('dashboard_others');
+			return $this->render('/pages/md');
     }
 
     public function actionLogin()
@@ -68,7 +73,7 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         } else {
-            return $this->render('login', [
+            return $this->renderPartial('login', [
                 'model' => $model,
             ]);
         }

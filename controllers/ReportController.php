@@ -88,7 +88,7 @@ class ReportController extends Controller
 		   $x='<p><h2>To see list of material required , select a work </h2></p>';
 	                  return $this->renderContent( $x.Html::dropDownList('workdropdown','',
 \yii\helpers\ArrayHelper::map(\app\models\Work::find()->asArray()->all(),'id','name_en'),
-						  ['prompt'=>'None','onChange'=>'window.location.replace("'.\yii\helpers\Url::to(['/report?rt=r2&wid=']).'"+$(this).val())'])					  
+						  ['prompt'=>'None','onChange'=>'window.location.replace("'.\yii\helpers\Url::to(['/report?rt=r4&wid=']).'"+$(this).val())'])					  
                   );
 					  
 				  }

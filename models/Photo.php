@@ -24,6 +24,7 @@ use Yii;
  */
 class Photo extends \yii\db\ActiveRecord
 {
+  public $nearby=50; //50 meters
     /**
      * @inheritdoc
      */
@@ -40,8 +41,9 @@ class Photo extends \yii\db\ActiveRecord
         return [
             [['work_id', 'height', 'width', 'size','created_by'], 'integer'],
             [['bwid','url', 'path', 'filename', 'loc','title'], 'string'],
-            [['gpslat', 'gpslong'], 'number'],
+            [['gpslat', 'gpslong','approved'], 'number'],
             [['mime'], 'string', 'max' => 50],
+            [['title'],'safe'],
         ];
     }
 
@@ -73,4 +75,11 @@ class Photo extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Work::className(), ['id' => 'work_id']);
     }
+    /*
+    */
+     public function findNearBy($id)
+     {
+        $photo= $this->findModel($id);
+        
+     }
 }

@@ -1,54 +1,58 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-use kartik\slider\Slider;
-use kartik\widgets\DatePicker;
+use yii\bootstrap\ActiveForm;
+use app\common\Utility;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\WorkProgress */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-
+<?php
+ 
+ 
+$this->registerJs(
+   '$("document").ready(function(){ 
+        $("#new_work-progress").on("pjax:end", function() {
+            $.pjax.reload({container:"#work-progresss"});  //Reload GridView
+        });
+    });'
+);
+?>
+<h3>Form for creating work-progress</h3>
 <div class="work-progress-form">
 
-    <?php $form = ActiveForm::begin(); ?>
-	<div class="col-md-3">
+    <?php $form = ActiveForm::begin([
+    'layout' => 'horizontal',
+    'fieldConfig' => [
+        'template' => "{label}\n{beginWrapper}\n{input}\n{hint}\n{error}\n{endWrapper}",
+        'horizontalCssClasses' => [
+            'label' => 'col-sm-4',
+            'offset' => 'col-sm-offset-4',
+            'wrapper' => 'col-sm-8',
+            'error' => '',
+            'hint' => '',
+        ],
+    ],
+]); ?>
 
-    <?= $form->field($model, 'work_id')->dropDownList(
-\yii\helpers\ArrayHelper::map(\app\models\Work::find()->asArray()->all(),'id','name_'.Yii::$app->language)) ?>
-	</div>
-	<div class="col-md-1">
-    <?= $form->field($model, 'physical')->widget(Slider::classname(), [
-'pluginOptions'=>[
-'min'=>0,
-'max'=>100,
-'step'=>1
-]
-]); ?>
-	</div>
-	<div class="col-md-1">
-    <?= $form->field($model, 'financial')->widget(Slider::classname(), [
-'pluginOptions'=>[
-'min'=>0,
-'max'=>100,
-'step'=>1
-]
-]); ?>
-	</div>
-	<div class="col-md-2">
-    <?= $form->field($model, 'dateofprogress')->widget(DatePicker::classname(), [
-'options' => ['placeholder' => 'Enter Date of Progress...'],
-'pluginOptions' => [
-'autoclose'=>true
-]
-]); ?>
-	</div>
-	<div class="col-md-4">
-    <?= $form->field($model, 'remarks')->textarea(['rows' => 6]) ?>
-	</div>
-    <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    <?= $model->showForm($form,"work_id") ?>
+ <?= $model->showForm($form,"dateofprogress") ?>
+
+   <?= $model->showForm($form,"physical") ?>
+
+   <?= $model->showForm($form,"financial") ?>
+    <?= $model->showForm($form,"expenditure") ?>
+
+  
+  <?= $model->showForm($form,"remarks") ?>
+
+
+  
+
+
+   <div class="form-group">
+        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

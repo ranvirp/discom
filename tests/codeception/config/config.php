@@ -5,7 +5,10 @@
 return [
     'components' => [
         'db' => [
-            'dsn' => 'mysql:host=localhost;dbname=yii2_basic_tests',
+            'dsn' => 'mysql:host=localhost;dbname=kesco_tests',
+            'username'=>'root',
+            'password'=>'',
+            'charset'=>'utf8',
         ],
         'mailer' => [
             'useFileTransport' => true,

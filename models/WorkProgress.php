@@ -1,5 +1,4 @@
 <?php
-
 namespace app\models;
 
 use Yii;
@@ -13,6 +12,7 @@ use Yii;
  * @property integer $financial
  * @property string $dateofprogress
  * @property string $remarks
+ * @property double $expenditure
  *
  * @property Work $work
  */
@@ -34,7 +34,8 @@ class WorkProgress extends \yii\db\ActiveRecord
         return [
             [['work_id', 'physical', 'financial'], 'integer'],
             [['dateofprogress'], 'safe'],
-            [['remarks'], 'string']
+            [['remarks'], 'string'],
+            [['expenditure'], 'number']
         ];
     }
 
@@ -44,12 +45,13 @@ class WorkProgress extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'work_id' => 'Work ID',
-            'physical' => 'Physical',
-            'financial' => 'Financial',
-            'dateofprogress' => 'Dateofprogress',
-            'remarks' => 'Remarks',
+            'id' => Yii::t('app', 'ID'),
+            'work_id' => Yii::t('app', 'Work'),
+            'physical' => Yii::t('app', 'Physical'),
+            'financial' => Yii::t('app', 'Financial'),
+            'dateofprogress' => Yii::t('app', 'Date of Progress'),
+            'remarks' => Yii::t('app', 'Remarks'),
+            'expenditure' => Yii::t('app', 'Expenditure'),
         ];
     }
 
@@ -60,32 +62,93 @@ class WorkProgress extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Work::className(), ['id' => 'work_id']);
     }
-	public function getLatest()
+	/*
+	*@return form of individual elements
+	*/
+	public function showForm($form,$attribute)
 	{
-		$query='select *,max(dateofprogress) as latest from work_progress group by dateofprogress';
-		$wps= $this->db->createCommand()->queryAll($sql);
-		return $wps;
-		
-	}
-	public function afterSave()
+		switch ($attribute)
+		  {
+		   
+									
+			case 'id':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'work_id':
+			   return  $form->field($this,$attribute)->dropDownList(\yii\helpers\ArrayHelper::map(Work::find()->asArray()->all(),"id","name_".Yii::$app->language));
+			    
+			    break;
+									
+			case 'physical':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'financial':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'dateofprogress':
+			   return  
+			             $form->field($this, "dateofprogress")->widget(\kartik\widgets\DatePicker::classname(), [
+'options' => ['placeholder' => 'Enter'. $this->attributeLabels()["dateofprogress"]." ..."],
+'pluginOptions' => [
+'autoclose'=>true
+]
+]); 			    
+			    break;
+									
+			case 'remarks':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'expenditure':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+			 
+			default:
+			break;
+		  }
+    }
+	/*
+	*@return form of individual elements
+	*/
+	public function showValue($attribute)
 	{
-		parent::afterSave(true,[]);
-		$work=\app\models\Work::findOne($this->work_id);
-		
-		if ((!$work->dateofprogress) || (strtotime($work->dateofprogress)<strtotime($this->dateofprogress)))
-		{
-			//print_r($work);
-		//exit;
-		$work->fin=$this->financial;
-		$work->phy=$this->physical;
-		$work->dateofprogress=$this->dateofprogress;
-		$work->remarks=$this->remarks;
-		
-		if ($work->save())
-			print "Saved";
-		else 
-			print_r($work->errors);
-		//exit;
-		}
-	}
+	    $name='name_'.Yii::$app->language;
+		switch ($attribute)
+		  {
+		   
+									
+			case 'id':
+			   return $this->id;			    break;
+									
+			case 'work_id':
+			   return Work::findOne($this->work_id)->$name;			    break;
+									
+			case 'physical':
+			   return $this->physical;			    break;
+									
+			case 'financial':
+			   return $this->financial;			    break;
+									
+			case 'dateofprogress':
+			   return $this->dateofprogress;			    break;
+									
+			case 'remarks':
+			   return $this->remarks;			    break;
+									
+			case 'expenditure':
+			   return $this->expenditure;			    break;
+			 
+			default:
+			break;
+		  }
+    }
+	
 }

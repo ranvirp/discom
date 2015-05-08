@@ -1,5 +1,4 @@
 <?php
-
 namespace app\modules\masterdata\models;
 
 use Yii;
@@ -12,6 +11,8 @@ use Yii;
  * @property string $name_hi
  * @property string $name_en
  * @property string $shortcode
+ *
+ * @property Level $level
  */
 class DesignationType extends \yii\db\ActiveRecord
 {
@@ -48,8 +49,84 @@ class DesignationType extends \yii\db\ActiveRecord
             'shortcode' => Yii::t('app', 'Shortcode'),
         ];
     }
-	public function getLevel()
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLevel()
+    {
+        return $this->hasOne(Level::className(), ['id' => 'level_id']);
+    }
+	/*
+	*@return form of individual elements
+	*/
+	public function showForm($form,$attribute)
 	{
-		return $this->hasOne(\app\modules\masterdata\models\Level::className(),['id'=>'level_id']);
-	}
+		switch ($attribute)
+		  {
+		   
+									
+			case 'id':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'level_id':
+			   return  $form->field($this,$attribute)->dropDownList(\yii\helpers\ArrayHelper::map(Level::find()->asArray()->all(),"id","name_".Yii::$app->language),["prompt"=>"None.."]);
+			    
+			    break;
+									
+			case 'name_hi':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'name_en':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'shortcode':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+			 
+			default:
+			break;
+		  }
+    }
+	/*
+	*@return form of individual elements
+	*/
+	public function showValue($attribute)
+	{
+	    $name='name_'.Yii::$app->language;
+		switch ($attribute)
+		  {
+		   
+									
+			case 'id':
+			   return $this->id;			    break;
+									
+			case 'level_id':
+			   return Level::findOne($this->level_id)->$name;			    break;
+									
+			case 'name_hi':
+			   return $this->name_hi;			    break;
+									
+			case 'name_en':
+			   return $this->name_en;			    break;
+									
+			case 'shortcode':
+			   return $this->shortcode;			    break;
+			 
+			default:
+			break;
+		  }
+    }
+    public function getLevelObj()
+    {
+     return Level::findOne($this->level_id);
+    }
+	
 }

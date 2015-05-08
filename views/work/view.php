@@ -17,6 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		font-size:85%;
 	}
 </style>
+<div class="blue1"><h3><?=strtoUpper($model->name_en)?></h3></div>
 <div role="tabpanel">
 	<ul role="tablist" class="nav nav-tabs">
 		<li role="presentation" class="active">

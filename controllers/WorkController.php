@@ -3,11 +3,15 @@
 namespace app\controllers;
 
 use Yii;
+use app\common\Utility;
 use app\models\Work;
-use yii\data\ActiveDataProvider;
+use app\models\WorkSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use \app\models\MaterialRequirement;
+use yii\data\ActiveDataProvider;	
+use app\models\WorkProgress;
 
 /**
  * WorkController implements the CRUD actions for Work model.
@@ -32,23 +36,13 @@ class WorkController extends Controller
      */
     public function actionIndex()
     {
-        $model=new \app\models\WorkSearch;
-		/*
-		$dataProvider = new ActiveDataProvider([
-            'query' => $model->search(Yii::$app->request->get()),
-        ]);
-		 * 
-		 */
-		
-		$dataProvider=$model->search(Yii::$app->request->get());
-		$model=new \app\models\WorkProgress;
-		if ($model->load(Yii::$app->request->post())&& $model->save())
-		{
-			//Yii::$app->user->setFlash('Work Progress Updated Successfully');
-		}
+        $searchModel = new WorkSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'model'=>null,
         ]);
     }
 
@@ -69,36 +63,37 @@ class WorkController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate1()
+    
+    public function actionCreate()
     {
+       
+       
         $model = new Work();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$mr=new \app\models\MaterialRequirement;
-			$mts=Yii::$app->request->post('MaterialRequirement["material_type"]');
-			$qts=Yii::$app->request->post('MaterialRequirement["qty"]');
-			$values=Yii::$app->request->post('MaterialRequirement["value"]');
-			print_r($mts);
-			exit;
-			for ($i=0;$i<count($mts);$i++)
-			{
-				unset($mr->id);
-				$mr->material_type=$mts[$i];
-				$mr->qty=$qts[$i];
-				$mr->value=$values[$i];
-				print_r($mr);
-				exit;
-				$mr->save();
-			}
-			
-			
-			
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+           if (array_key_exists('app\models\Work',Utility::rules()))
+            foreach ($model->attributes as $attribute)
+            if (Utility::rules(Work) && array_key_exists($attribute,Utility::rules()['app\models\Work']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['app\models\Work'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            $model = new Work();; //reset model
         }
+ 
+        $searchModel = new WorkSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            'x'=>[],
+            
+            
+        ]);
+
     }
 
     /**
@@ -107,38 +102,35 @@ class WorkController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+        public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			
-			$mrs=Yii::$app->request->post('MaterialRequirement');
-			
-			//print_r($mrs);
-			//exit;
-			for ($i=0;$i<count($mrs);$i++)
-			{
-				$mr=new \app\models\MaterialRequirement;
-				$mr->work_id=$model->id;
-				if (isset($mrs['id']))
-				$mr->id=$mrs['id'][$i];
-				$mr->material_type=$mrs['material_type'][$i];
-				$mr->qty=$mrs['qty'][$i];
-				$mr->value=$mrs['qty'][$i];
-				//print_r($mr);
-				if (!$mr->save())
-					print_r ($mr->errors);
-				//exit;
-			}
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+         $model = $this->findModel($id);
+       
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+        if (array_key_exists('app\models\Work',Utility::rules()))
+           
+            foreach ($model->attributes as $attribute)
+            if (array_key_exists($attribute,Utility::rules()['app\models\Work']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['app\models\Work'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            $model = new Work();; //reset model
         }
-    }
+ 
+       $searchModel = new WorkSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
 
+    }
     /**
      * Deletes an existing Work model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -167,83 +159,75 @@ class WorkController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-	public function actionDashboard()
-	{
-		return $this->render('dashboard');
-	}
-	public function actionCreate()
-	{
-		/*
-		 * 3 | 33/11 KV  S/S : New
-  4 | 33/11 KV  S/S : Additional Transformer
-  5 | 33/11 KV  S/S : Transformer capacity enhancement
-  6 | Renovation & Modernisation of 33/11 kV SS
-  7 | New 33 KV new feeders/Bifurcation of feeders:
-  8 | 33 KV feeders Reconductoring/Augmentation
-  9 | 33 kV Line Bay Extension at EHV station
- 10 | 11 kV Line : New Feeder/ Feeder Bifurcation
- 11 | 11 kV Line : Augmentation/Reconductoring
- 12 | Arial Bunched Cable
- 13 | UG Cable
- 14 | 11 KV Bay Extension
- 15 | Installation of Distribution Transformer
- 16 | Capacity enhancement of LT sub-station
- 17 | LT Line : New Feeder/ Feeder Bifurcation
- 18 | LT Line : Augmentation/Reconductoring
- 19 | Capacitor Bank
- 20 | HVDS
- 21 | Metering
- 22 | Provisioning of solar panel
- 23 | RMU,Sectionaliser, Auto reclosures, FPI etc.
- 24 | Others
-
-		 */
-		$x=\app\models\Work::$work_type_rules;
-	
-		$model = new Work();
- 
-        if ($model->load(Yii::$app->request->post()))
+    public function actionAddwp($id=1)
+    {
+      $model = new WorkProgress();
+        $model->work_id=$id;
+        if ($model->load(Yii::$app->request->post()) && $model->save())
         {
-			if (array_key_exists($model->work_type_id,$x))
-			$model->validators->append(
-               \yii\validators\Validator::createValidator('required', $model, $x[$model->work_type_id]['required'])
-            );
-			if ($model->save())
-            $model = new Work(); //reset model
+           $work=Work::findOne($id);
+           if ($work->dateofprogress<$model->dateofprogress)
+              {
+                $work->dateofprogress=$model->dateofprogress;
+                $work->save();
+              }
+            $model = new WorkProgress();
+			$model->work_id=$id;//reset model
         }
  
-        $searchModel = new \app\models\WorkSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+       
+        $dataProvider = new ActiveDataProvider(['query'=>WorkProgress::find()->where('work_id='.$id)->orderBy('dateofprogress desc')]);
  
-        return $this->render('index_3', [
-            'searchModel' => $searchModel,
+        $data= $this->renderPartial('/workprogress/index', [
+            'searchModel' => new \app\models\WorkProgressSearch(),
             'dataProvider' => $dataProvider,
             'model' => $model,
-			'x'=>$x
+        ]);
+         $searchModel = new WorkSearch();
+        $dataProvider1 = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index_wp', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider1,
+            'data' => $data,
+            'x'=>[],
+            
+            
+        ]);
+    }
+    public function actionAddmq($id=0)
+	{
+	  if ($id>0) {//some entry from parameter
+	   $model = new MaterialRequirement();
+        $model->work_id=$id;
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+        {
+            $model = new MaterialRequirement();
+			$model->work_id=$id;//reset model
+        }
+ 
+       
+        $dataProvider = new ActiveDataProvider(['query'=>MaterialRequirement::find()->where('work_id='.$id)->orderBy('id desc')]);
+ 
+        $data= $this->renderPartial('/materialrequirement/index_simple', [
+            //'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+        ]);
+        } else
+           $data='';
+         $searchModel = new WorkSearch();
+        $dataProvider1 = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index_mq', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider1,
+            'data' => $data,
+            'x'=>[],
+            
+            
         ]);
 
 	}
-	public function actionAddmat()
-	{
-		if (!Yii::$app->user->can('operator'))
-			throw new \yii\web\HttpException('403','The requested page is not for you. Ask operator.');
-		$model=new \app\models\WorkSearch;
-		
-		$dataProvider=$model->search(Yii::$app->request->get());
-	
-		return $this->render('index_2',['dataProvider' => $dataProvider]);
-	}
-	public function actionForm1()
-	{
-		$x=[1=>['show'=>['name_en','feeder_id'],'required'=>['feeder_id']]];
-		$work=Yii::$app->request->post('Work');
-		if (array_key_exists('work_type_id',$work))
-		{
-			$work_type_id=$work['work_type_id'];
-			foreach ($x[$work_type_id]['show'] as $field)
-			{
-				$content.=\app\models\Work::display($form,$field);
-			}
-		}
-	}
+    
 }

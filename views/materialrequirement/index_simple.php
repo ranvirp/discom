@@ -8,7 +8,6 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\models\CountriesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
  $work=\app\models\Work::findOne($model->work_id);
- 
 $this->title = Yii::t('app', 'Material Requirement for '.$work->name_en);
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -20,8 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <dl>
 	<dt>Work Id</dt>
 	<dd><?=$work->work_id?></dd>
-</dl>
-<dl>
 	<dt>Name of Work</dt>
 	<dd><?=$work->name_en?></dd>
 </dl>
@@ -53,4 +50,4 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 	</div>
 </div>
-
+</div>

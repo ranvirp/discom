@@ -3,9 +3,9 @@
 namespace app\modules\masterdata\controllers;
 
 use Yii;
+use app\common\Utility;
 use app\modules\masterdata\models\Designation;
 use app\modules\masterdata\models\DesignationSearch;
-use app\modules\masterdata\Utility;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -39,6 +39,7 @@ class DesignationController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'model'=>null,
         ]);
     }
 
@@ -59,21 +60,40 @@ class DesignationController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+    
     public function actionCreate()
     {
-        
-		$model = new Designation();
-		$model->load(Yii::$app->request->post());
-		$x=\app\modules\masterdata\models\Designation::find()->where(['level_id'=>$model->level_id,
-			'designation_type_id'=>$model->designation_type_id])->one();
-		if ($x) $model->id=$x->id;
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+       
+       
+        $model = new Designation();
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+           if (array_key_exists('app\modules\masterdata\models\Designation',Utility::rules()))
+            foreach ($model->attributes as $attribute)
+            if (Utility::rules('Designation') && array_key_exists($attribute,Utility::rules()['app\modules\masterdata\models\Designation']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['app\modules\masterdata\models\Designation'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            {
+            $model->createUserAndRole();
+             $model = new Designation();; //reset model
+           
+      
+            }
         }
+ 
+        $searchModel = new DesignationSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
+
     }
 
     /**
@@ -82,19 +102,41 @@ class DesignationController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+        public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+         $model = $this->findModel($id);
+        $x=\app\modules\masterdata\models\Designation::find()->where(['level_id'=>$model->level_id,
+		'designation_type_id'=>$model->designation_type_id])->one();
+    	if ($x) $model->id=$x->id;
+        if ($model->load(Yii::$app->request->post()))
+        {
+        if (array_key_exists('app\modules\masterdata\models\Designation',Utility::rules()))
+           
+            foreach ($model->attributes as $attribute)
+            if (array_key_exists($attribute,Utility::rules()['app\modules\masterdata\models\Designation']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['app\modules\masterdata\models\Designation'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            {
+             $model->createUserAndRole();
+      
+            $model = new Designation();; //reset model
+            
+            }
         }
-    }
+ 
+       $searchModel = new DesignationSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
 
+    }
     /**
      * Deletes an existing Designation model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -123,18 +165,5 @@ class DesignationController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-	public function actionUtility()
-	{
-		if (Yii::$app->request->get('at'))
-		{//at=>action type
-			$at=Yii::$app->request->get('at');
-			switch ($at)
-			{
-				case 'getLevelsByType':
-				 $id=Yii::$app->request->get('id');
-				 return json_encode(Utility::getLevelsByType($id));
-			     break;
-			}
-		}
-	}
+    
 }

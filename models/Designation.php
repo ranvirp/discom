@@ -58,4 +58,14 @@ class Designation extends \yii\db\ActiveRecord
             'officer_userid' => 'Officer Userid',
         ];
     }
+    /*
+    */
+    public function getDesignationtype()
+    {
+      return \app\models\DesignationType::findOne($this->designation_type_id);
+    }
+    public function getLevel()
+    {
+      return $this->getDesignationtype()->getLevel()->name_en;
+    }
 }

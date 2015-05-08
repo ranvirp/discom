@@ -1,55 +1,53 @@
 <?php
 
 use yii\helpers\Html;
-use kartik\grid\GridView;
+use yii\grid\GridView;
 
 /* @var $this yii\web\View */
+/* @var $searchModel app\models\WorkProgressSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Work Progresses';
+$this->title = Yii::t('app', 'Work Progresses');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="work-progress-index">
+<?php if ($model!=null):?><div class="col-lg-6">
+<?=$this->render('_form',['model'=>$model]) ?></div>
+<div class="col-lg-6">
+<?php else:?><div class="col-lg-12">
+<?php endif;?><div class="work-progress-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
-        <?= Html::a('Create Work Progress', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+       // 'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-[
-    'class'=>'kartik\grid\ExpandRowColumn',
-    'width'=>'50px',
-    'value'=>function ($model, $key, $index, $column) {
-        return GridView::ROW_COLLAPSED;
-    },
-    'detail'=>function ($model, $key, $index, $column) {
-        return Yii::$app->controller->renderPartial('_form_1', ['model'=>$model]);
-    },
-    'headerOptions'=>['class'=>'kartik-sheet-style'] 
-    //'disabled'=>true,
-    //'detailUrl'=>Url::to(['/site/test-expand'])
-],
-            'id',
-		[ 'header'=>'Date of Report',
-			'value'=>function($model,$key,$index,$column)
-	             {  
-		            $date = new DateTime($model->dateofprogress);
-		            return $date->format('Y-m-d');
-	             },
-			],
-            'work_id',
-            'physical',
-            'financial',
-            
-            'remarks:ntext',
+
+['header'=>'work_id',
+'value'=>function($model,$key,$index,$column)
+{
+                return $model->showValue('work_id');
+},],['header'=>'physical',
+'value'=>function($model,$key,$index,$column)
+{
+                return $model->showValue('physical');
+},],['header'=>'financial',
+'value'=>function($model,$key,$index,$column)
+{
+                return $model->showValue('financial');
+},],['header'=>'dateofprogress',
+'value'=>function($model,$key,$index,$column)
+{
+                return $model->showValue('dateofprogress');
+},],            // 'remarks:ntext',
+            // 'expenditure',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        'tableOptions'=>['class'=>'small table table-hover'],
     ]); ?>
 
+</div>
 </div>

@@ -45,4 +45,9 @@ class DesignationType extends \yii\db\ActiveRecord
             'name_en' => 'Name En',
         ];
     }
+    public function getLevel()
+    {
+    return \app\models\Level::findOne($this->level_id);
+
+    }
 }

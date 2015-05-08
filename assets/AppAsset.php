@@ -19,20 +19,20 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
-		'css/sb-admin-2.css',
+		//'css/sb-admin-2.css',
 		  ];
     public $js = [
-		'js/sb-admin-2.js',
+		//'js/sb-admin-2.js',
 		
 		'https://www.google.com/jsapi',
-		'js/googletransliterate.js',
+		//'js/googletransliterate.js',
 		'js/common.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
 		'yii\bootstrap\BootstrapPluginAsset',
-		'yii\bootstrap\BootstrapThemeAsset',
+		//'yii\bootstrap\BootstrapThemeAsset',
 		
     ];
 }

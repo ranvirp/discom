@@ -3,8 +3,9 @@
 namespace app\controllers;
 
 use Yii;
+use app\common\Utility;
 use app\models\Division;
-use yii\data\ActiveDataProvider;
+use app\models\DivisionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,7 +22,6 @@ class DivisionController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
-					'getFromCircle'=>['post'],
                 ],
             ],
         ];
@@ -33,11 +33,11 @@ class DivisionController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Division::find(),
-        ]);
+        $searchModel = new DivisionSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -59,17 +59,35 @@ class DivisionController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+    
     public function actionCreate()
     {
+       
+       
         $model = new Division();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+           if (array_key_exists('app\models\Division',Utility::rules()))
+            foreach ($model->attributes as $attribute)
+            if (Utility::rules('app\models\Division') && array_key_exists($attribute,Utility::rules()['app\models\Division']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['app\models\Division'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            $model = new Division();; //reset model
         }
+ 
+        $searchModel = new DivisionSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
+
     }
 
     /**
@@ -78,19 +96,35 @@ class DivisionController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+        public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+         $model = $this->findModel($id);
+       
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+        if (array_key_exists('app\models\Division',Utility::rules()))
+           
+            foreach ($model->attributes as $attribute)
+            if (array_key_exists($attribute,Utility::rules()['app\models\Division']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['app\models\Division'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            $model = new Division();; //reset model
         }
-    }
+ 
+       $searchModel = new DivisionSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
 
+    }
     /**
      * Deletes an existing Division model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -119,21 +153,21 @@ class DivisionController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-	/*
-	 * Returns list of divisions in a circle in json form
-	 */
-	public function actionGet()
-	{
-		$lang=Yii::$app->language;
-		$circle=Yii::$app->request->post('depdrop_parents')[0];
-		$y=[];
-		foreach (\yii\helpers\ArrayHelper::map(\app\models\Division::find()->where('circle_id=:circle_id',[':circle_id'=>$circle])->asArray()->all(),'id','name_'.$lang) as $id=>$name)
-		{
-			$x['id']=$id;
-			$x['name']=$name;
-			$y[]=$x;
-		}
-		echo \yii\helpers\Json::encode(['output'=>$y,'selected'=>'']);
-		return;
-	}
+    /* 
+		    * Returns list of divisions in a circle in json form 
+		    */ 
+		   public function actionGet() 
+		   { 
+		       $lang=Yii::$app->language; 
+		       $circle=Yii::$app->request->post('depdrop_parents')[0]; 
+		       $y=[]; 
+		       foreach (\yii\helpers\ArrayHelper::map(\app\models\Division::find()->where('circle_id=:circle_id',[':circle_id'=>$circle])->asArray()->all(),'id','name_'.$lang) as $id=>$name) 
+		       { 
+		           $x['id']=$id; 
+		           $x['name']=$name; 
+		           $y[]=$x; 
+		       } 
+		       echo \yii\helpers\Json::encode(['output'=>$y,'selected'=>'']); 
+		       return; 
+		   } 
 }

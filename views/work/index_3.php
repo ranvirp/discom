@@ -75,9 +75,9 @@ echo $this->render('_form_3',['model'=>$model,'x'=>$x]);
 	     {
 		$dop=$model->dateofprogress?date('d/m/Y',strtotime($model->dateofprogress)):'Not Entered';
 		$x='';
-		if (array_key_exists($model->work_type_id,\app\models\Work::$work_type_rules) )
+		if (array_key_exists($model->work_type_id,\app\common\Utility::rules()['\app\models\Work']['work_type']) )
 		{
-			foreach (\app\models\Work::$work_type_rules[$model->work_type_id]['show'] as $field)
+			foreach (\app\common\Utility::rules()['\app\models\Work']['work_type'][$model->work_type_id]['show'] as $field)
 			{
 				$x.=$field.'='.$model->$field.';';
 			}

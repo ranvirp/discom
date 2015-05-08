@@ -5,6 +5,7 @@
 
 use yii\db\ActiveRecordInterface;
 use yii\helpers\StringHelper;
+use app\common\Utility;
 
 
 /* @var $this yii\web\View */
@@ -30,6 +31,7 @@ echo "<?php\n";
 namespace <?= StringHelper::dirname(ltrim($generator->controllerClass, '\\')) ?>;
 
 use Yii;
+use app\common\Utility;
 use <?= ltrim($generator->modelClass, '\\') ?>;
 <?php if (!empty($generator->searchModelClass)): ?>
 use <?= ltrim($generator->searchModelClass, '\\') . (isset($searchModelAlias) ? " as $searchModelAlias" : "") ?>;
@@ -99,17 +101,35 @@ class <?= $controllerClass ?> extends <?= StringHelper::basename($generator->bas
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+    
     public function actionCreate()
     {
+       
+       
         $model = new <?= $modelClass ?>();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', <?= $urlParams ?>]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+           if (array_key_exists('<?=$generator->modelClass?>',Utility::rules()))
+            foreach ($model->attributes as $attribute)
+            if (Utility::rules('<?= $generator->modelClass?>') && array_key_exists($attribute,Utility::rules()['<?= $generator->modelClass?>']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['<?= $generator->modelClass?>'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            $model = new <?= $modelClass ?>();; //reset model
         }
+ 
+        $searchModel = new <?=$searchModelClass?>();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
+
     }
 
     /**
@@ -118,19 +138,35 @@ class <?= $controllerClass ?> extends <?= StringHelper::basename($generator->bas
      * <?= implode("\n     * ", $actionParamComments) . "\n" ?>
      * @return mixed
      */
-    public function actionUpdate(<?= $actionParams ?>)
+        public function actionUpdate($id)
     {
-        $model = $this->findModel(<?= $actionParams ?>);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', <?= $urlParams ?>]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+         $model = $this->findModel($id);
+       
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+        if (array_key_exists('<?=$generator->modelClass?>',Utility::rules()))
+           
+            foreach ($model->attributes as $attribute)
+            if (array_key_exists($attribute,Utility::rules()['<?= $generator->modelClass?>']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['<?= $generator->modelClass?>'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            $model = new <?= $modelClass ?>();; //reset model
         }
-    }
+ 
+       $searchModel = new <?=$searchModelClass?>();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
 
+    }
     /**
      * Deletes an existing <?= $modelClass ?> model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

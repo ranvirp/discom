@@ -7,11 +7,13 @@ $config = [
 	'basePath' => dirname(__DIR__),
 	'bootstrap' => ['log'],
 	'language' => 'en',
+	'aliases'=>['@mdm/admin'=>'@vendor/mdmsoft/yii2-admin'],
 	'components' => [
 		'view' => [
 			'theme' => [
 				'pathMap' => [
-					'@app/views' => '@app/views'
+					'@app/views' => '@app/views',
+					'@vendor/amnah/yii2-user/views'=>'@app/views/user/',
 				],
 			],
 		],
@@ -37,7 +39,7 @@ $config = [
 		
 		  'authManager' => [
 		  'class' => '\yii\rbac\DbManager',
-		  'ruleTable' => 'AuthRule', // Optional
+		  'ruleTable' => 'AthRule', // Optional
 		  'itemTable' => 'AuthItem',  // Optional
 		  'itemChildTable' => 'AuthItemChild',  // Optional
 		  'assignmentTable' => 'AuthAssignment',  // Optional
@@ -73,16 +75,23 @@ $config = [
 		'db' => require(__DIR__ . '/db.php'),
 	],
 	'modules' => [
+	
 		'user' => [
 			'class' => 'amnah\yii2\user\Module',
 			//'modelClasses'=>['User'=>'app\models\User']
 		],
 		'api' => ['class' => '\app\modules\api\Module'],
 		'masterdata' => ['class' => '\app\modules\masterdata\Module'],
-		/*
+		
 		'admin' => [
-			'class' => 'mdm\admin\Module',],
-		*/
+			'class' => 'mdm\admin\Module',
+			'controllerMap'=>[
+			 'assignment' => [
+                    'class' => 'mdm\admin\controllers\AssignmentController',
+                    'userClassName' => 'amnah\yii2\user\models\User',
+                    'idField' => 'id', // id field of model User
+                ]],],
+		
 		'gridview' => [
 			'class' => '\kartik\grid\Module'
 // enter optional module parameters below - only if you need to
@@ -101,11 +110,12 @@ $config = [
 	  'as access' => [
 	  'class' => 'mdm\admin\components\AccessControl',
 	  'allowActions' => [
-	  'user/*', // add or remove allowed actions to this list
+	  'admin/*', // add or remove allowed actions to this list
+	  'user/*',
 	  ]
 	  ],
-	*/
-	 
+	
+	 */
 ];
 
 if (YII_ENV_DEV) {
@@ -120,9 +130,20 @@ if (YII_ENV_DEV) {
 				'crud' => [ // generator name
 					'class' => 'yii\gii\generators\crud\Generator', // generator class
 					'templates' => [ //setting for out templates
-						'myCrud' => '@app/giitemplates/crud/default', // template name => path to template
+						'myCrud' => '@app/giitemplatesNew/crud/default', // template name => path to template
 					]
-				]
+				],
+				'model' => [ // generator name
+					'class' => '\app\giiTemplatesNew\model\Generator', // generator class
+					'templates' => [ //setting for out templates
+						'myModel' => '@app/giitemplatesNew/model/default', // template name => path to template
+					]
+				],
+				'fixturegii'=>[
+				   'class'=>'insolita\fixturegii\gii\FixtureTemplateGenerator',
+				   'templatePath'=>'@tests/codeception/templates',
+				
+				],
 			],];
 }
 

@@ -3,8 +3,9 @@
 namespace app\controllers;
 
 use Yii;
+use app\common\Utility;
 use app\models\WorkProgress;
-use yii\data\ActiveDataProvider;
+use app\models\WorkProgressSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -32,17 +33,11 @@ class WorkProgressController extends Controller
      */
     public function actionIndex()
     {
-        
-        $model = new \app\models\WorkProgress;
-		if ($model->load(Yii::$app->request->post()) && $model->save())
-		{
-		}
-		
-		$dataProvider = new ActiveDataProvider([
-            'query' => WorkProgress::find(),
-        ]);
-		 
+        $searchModel = new WorkProgressSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -64,17 +59,35 @@ class WorkProgressController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+    
     public function actionCreate()
     {
+       
+        
         $model = new WorkProgress();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return ;
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+           if (array_key_exists('app\models\WorkProgress',Utility::rules()))
+            foreach ($model->attributes as $attribute)
+            if (Utility::rules(WorkProgress) && array_key_exists($attribute,Utility::rules()['app\models\WorkProgress']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['app\models\WorkProgress'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            $model = new WorkProgress();; //reset model
         }
+ 
+        $searchModel = new \app\models\WorkProgressSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
+
     }
 
     /**
@@ -83,19 +96,35 @@ class WorkProgressController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+        public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+         $model = $this->findModel($id);
+       
+ 
+        if ($model->load(Yii::$app->request->post()))
+        {
+        if (array_key_exists('app\models\WorkProgress',Utility::rules()))
+           
+            foreach ($model->attributes as $attribute)
+            if (array_key_exists($attribute,Utility::rules()['app\models\WorkProgress']))
+            $model->validators->append(
+               \yii\validators\Validator::createValidator('required', $model, Utility::rules()['app\models\WorkProgress'][$model->$attribute]['required'])
+            );
+            if ($model->save())
+            $model = new WorkProgress();; //reset model
         }
-    }
+ 
+       $searchModel = new WorkProgressSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+ 
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            
+        ]);
 
+    }
     /**
      * Deletes an existing WorkProgress model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

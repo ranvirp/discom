@@ -49,10 +49,21 @@ class RbacController extends Controller
 	public function actionAssign($username,$role)
 	{
 		 $auth = Yii::$app->authManager;
-		 $userid=\amnah\yii2\user\models\User::find()->where(['username'=>$username])->one()->id;
+		 print "Assigning role $role to $username \n";
+		// print $username;
+		 //exit;
+		 $usermodel=\amnah\yii2\user\models\User::find()->where(['username'=>$username])->one();
+		if ($usermodel)  $userid=$usermodel->id;
+		  else {print "username $username not found ..exiting\n";exit;}
 		 $authRole=$auth->getRole($role);
-		 if ($authRole)
-		$auth->assign($authRole,$userid);
+		 if (!$authRole) 
+		 {
+		   $authRole= $auth->createRole($role);
+		   $auth->add($authRole);
+		 }
+		 $auth->assign($authRole,$userid);
 	}
+	//public function actionAssigndesignation($username,$designation)
+	
 }
 

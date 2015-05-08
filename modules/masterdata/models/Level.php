@@ -1,5 +1,4 @@
 <?php
-
 namespace app\modules\masterdata\models;
 
 use Yii;
@@ -15,7 +14,7 @@ use Yii;
  *
  * @property Department $dept
  */
-class Level extends \yii\db\ActiveRecord
+class Level extends \app\common\MyActiveRecord
 {
     /**
      * @inheritdoc
@@ -58,4 +57,72 @@ class Level extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Department::className(), ['id' => 'dept_id']);
     }
+	/*
+	*@return form of individual elements
+	*/
+	public function showForm($form,$attribute)
+	{
+		switch ($attribute)
+		  {
+		   
+									
+			case 'id':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'class_name':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'dept_id':
+			   return  $form->field($this,$attribute)->dropDownList(\yii\helpers\ArrayHelper::map(Department::find()->asArray()->all(),"id","name_".Yii::$app->language));
+			    
+			    break;
+									
+			case 'name_hi':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'name_en':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+			 
+			default:
+			break;
+		  }
+    }
+	/*
+	*@return form of individual elements
+	*/
+	public function showValue($attribute)
+	{
+	    $name='name_'.Yii::$app->language;
+		switch ($attribute)
+		  {
+		   
+									
+			case 'id':
+			   return $this->id;			    break;
+									
+			case 'class_name':
+			   return $this->class_name;			    break;
+									
+			case 'dept_id':
+			   return Department::findOne($this->dept_id)->$name;			    break;
+									
+			case 'name_hi':
+			   return $this->name_hi;			    break;
+									
+			case 'name_en':
+			   return $this->name_en;			    break;
+			 
+			default:
+			break;
+		  }
+    }
+	
 }

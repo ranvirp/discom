@@ -137,7 +137,6 @@ class FileController extends Controller
 	{
 		        if (Yii::$app->request->isPost) {
 					$uploads=[];
-					$fileModel=new \app\models\File;
 					//print_r(Yii::$app->request->post());
 					//exit;
 					$model=Yii::$app->request->post('model');
@@ -151,6 +150,11 @@ class FileController extends Controller
 
             if ($files) {  
 				foreach ($files as $index=>$file)
+				{
+				$fileModel=new \app\models\File;
+					
+				$fileModel->mime=\yii\helpers\FileHelper::getMimeType($file->tempName);
+				
                 $file->saveAs('../uploads/' . $file->baseName . '.' . $file->extension);
 				$fileModel->filename=$file->name;
 				$fileModel->size=$file->size;
@@ -159,7 +163,6 @@ class FileController extends Controller
 				$fileModel->title=$title[$file_id];
 				else
 					 $fileModel->title=$file->name;
-				$fileModel->mime=\yii\helpers\FileHelper::getMimeType($file->tempName);
 				$fileModel->save();
 			    $fileModel->url=\yii\helpers\Url::to(['/file?id='.$fileModel->id]);
 				$fileModel->uploaded_by = Yii::$app->user->getId();
@@ -167,6 +170,7 @@ class FileController extends Controller
 				$fileModel->save();
 			
 				$uploads[]=$fileModel->id;
+				}
             }
         }
 		return json_encode($uploads);

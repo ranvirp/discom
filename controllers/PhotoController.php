@@ -98,9 +98,14 @@ class PhotoController extends Controller
      */
     public function actionDelete($id)
     {
+       if (Yii::$app->user->can('operator'))
+       {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+        }
+         else 
+            throw new HttpException('400','Not Allowed');
     }
 
     /**
@@ -117,5 +122,38 @@ class PhotoController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+    
+    /*
+       This would show an interface to the operator about photos coming
+       from the users and the user with role photooperator can 
+       approve/disapprove the photo depending on whether it is appropriate
+       or not.
+    */
+    public function actionConsole()
+    {
+     if (!Yii::$app->user->can('photooperator'))
+        throw new NotFoundHttpException('the request page does not exist for you.');
+      $approved=Yii::$app->request->post('approved');
+      $id=Yii::$app->request->post('id');
+      if ($id && $approved)
+      {
+      $model=$this->findModel($id);
+      
+      $model->approved=$approved;
+      $model->save();
+      }
+      return $this->render('photoconsole');
+      
+      
+    }
+    /*
+      This would display the photos given a category.
+    */
+    public function actionLatest($cat)
+    {
+      $titles=['w'=>'Works','t'=>'Theft','br'=>'BreakDown'];
+      $dataProvider=new ActiveDataProvider(['query'=>\app\models\Photo::find()->where('bwid like :cat',[':cat'=>$cat.'%'])]);
+      return $this->render('latest',['dataProvider'=>$dataProvider,'title'=>$titles[$cat]]);
     }
 }

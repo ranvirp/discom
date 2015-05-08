@@ -1,5 +1,4 @@
 <?php
-
 namespace app\modules\masterdata\models;
 
 use Yii;
@@ -11,6 +10,7 @@ use Yii;
  * @property string $name_hi
  * @property string $name_en
  *
+ * @property Level[] $levels
  * @property Work[] $works
  */
 class Department extends \yii\db\ActiveRecord
@@ -48,8 +48,68 @@ class Department extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getLevels()
+    {
+        return $this->hasMany(Level::className(), ['dept_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getWorks()
     {
-        return $this->hasMany(\app\models\Work::className(), ['dept_id' => 'id']);
+        return $this->hasMany(Work::className(), ['dept_id' => 'id']);
     }
+	/*
+	*@return form of individual elements
+	*/
+	public function showForm($form,$attribute)
+	{
+		switch ($attribute)
+		  {
+		   
+									
+			case 'id':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+									
+			case 'name_hi':
+			   return  $form->field($this,$attribute)->textInput(['class'=>'form-control hindiinput']);
+			    
+			    break;
+									
+			case 'name_en':
+			   return  $form->field($this,$attribute)->textInput();
+			    
+			    break;
+			 
+			default:
+			break;
+		  }
+    }
+	/*
+	*@return form of individual elements
+	*/
+	public function showValue($attribute)
+	{
+	    $name='name_'.Yii::$app->language;
+		switch ($attribute)
+		  {
+		   
+									
+			case 'id':
+			   return $this->id;			    break;
+									
+			case 'name_hi':
+			   return $this->name_hi;			    break;
+									
+			case 'name_en':
+			   return $this->name_en;			    break;
+			 
+			default:
+			break;
+		  }
+    }
+	
 }
